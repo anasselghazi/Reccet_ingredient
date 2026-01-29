@@ -44,6 +44,11 @@ class RecipeController extends Controller
     return redirect()->route('recipes.index')->with('succes','Recette mise a jour ');
     }
 
-
+    public function destroy(Recipe $recipe){
+        
+    $recipe->delete();
+    return redirect()->route('recipes.index')->with('succes','Recette supprime avec  succes');
+    
+    }
 
 }

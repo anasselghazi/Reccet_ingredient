@@ -37,9 +37,10 @@
                     <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                 </div>
                 <div class="p-5 flex flex-col flex-grow">
-                    <h3 class="font-bold text-lg text-gray-800 mb-2">{{ $recipe->titre }}</h3>
-                    <p class="text-sm text-gray-600 mb-4 line-clamp-3">{{ $recipe->description }}</p>
-                    
+                    <h3 class="font-bold text-lg text-gray-800 mb-2">{{ $recipe->title }}</h3>
+                    <p class="text-sm text-gray-600 mb-2 line-clamp-3">{{ $recipe->description }}</p>
+                    <p class="text-sm text-gray-600 mb-4 line-clamp-3"><strong>Ingrédients:</strong> {{ $recipe->ingredients }}</p>
+
                     <div class="flex gap-2 mt-auto">
                         <button onclick='openModal(true, @json($recipe))' 
                                 class="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 rounded-lg text-sm font-medium transition">
@@ -106,7 +107,7 @@
                 form.action = `/recipes/${recipe.id}`;
                 methodContainer.innerHTML = `<input type="hidden" name="_method" value="PUT">`;
                 
-                document.getElementById('form-titre').value = recipe.titre;
+                document.getElementById('form-title').value = recipe.title;
                 document.getElementById('form-ingredients').value = recipe.ingredients;
                 document.getElementById('form-description').value = recipe.description;
                 document.getElementById('btn-submit').textContent = "Mettre à jour";
