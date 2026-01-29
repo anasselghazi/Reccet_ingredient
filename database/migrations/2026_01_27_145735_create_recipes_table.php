@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->text('ingredients');
-            $table->text('steps');
-            $table->string('image');
-            $table->string('category');
+            $table->text('steps')->nullable();
+            $table->string('image')->nullable();
+            $table->string('category')->nullable();
             $table->timestamps();
         });
     }

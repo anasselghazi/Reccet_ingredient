@@ -1,0 +1,293 @@
+ <!DOCTYPE html>
+<html lang="fr" class="bg-gray-50">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mes Recettes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .modal {
+      transition: all 0.3s ease;
+    }
+    .modal.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .modal:not(.hidden) {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    textarea {
+      resize: vertical;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 font-sans antialiased">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Mes Recettes</h1>
+      <button id="btn-add"
+              class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-full font-medium shadow-md flex items-center gap-2 transition">
+        <span class="text-xl leading-none">+</span> Nouvelle recette
+      </button>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+
+    <div id="recipes-container" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+      <!-- Template card (hidden) -->
+      <div class="recipe-card hidden bg-white rounded-xl shadow border border-gray-200 overflow-hidden flex flex-col">
+        <div class="h-44 bg-gray-200 flex items-center justify-center text-gray-400 text-sm font-medium">
+          Pas d'image
+        </div>
+        <div class="p-5 flex flex-col flex-grow">
+          <h3 class="recipe-title font-semibold text-lg text-gray-800 mb-2 line-clamp-2"></h3>
+          <p class="text-sm text-gray-600 mb-3 line-clamp-3 flex-grow"></p>
+          
+          <div class="text-xs text-gray-500 mb-4 space-y-1">
+            <div><span class="font-medium">Catégorie :</span> <span class="recipe-category"></span></div>
+          </div>
+
+          <div class="flex gap-3 mt-auto">
+            <button class="edit-btn flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 px-4 rounded-lg font-medium transition text-sm">
+              Modifier
+            </button>
+            <button class="delete-btn flex-1 bg-red-50 hover:bg-red-100 text-red-700 py-2 px-4 rounded-lg font-medium transition text-sm">
+              Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ──── ADD / EDIT MODAL ──── -->
+  <div id="modal-add" class="modal fixed inset-0 bg-black/60 flex items-center justify-center z-50 opacity-0 pointer-events-none hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 max-h-[92vh] overflow-y-auto transform transition-all scale-95">
+      
+      <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-5 text-white sticky top-0 z-10">
+        <h2 class="text-xl font-bold">Ajouter une recette</h2>
+      </div>
+
+      <form id="add-recipe-form" class="p-6 space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Titre <span class="text-red-500">*</span></label>
+          <input type="text" name="title" required
+                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                 placeholder="Tajine poulet olives et citron confit">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Description <span class="text-red-500">*</span></label>
+          <textarea name="description" rows="3" required
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                    placeholder="Une recette familiale très parfumée..."></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Ingrédients (un par ligne) <span class="text-red-500">*</span></label>
+          <textarea name="ingredients" rows="6" required
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono text-sm"
+                    placeholder="• 1 kg de poulet&#10;• 200 g d'olives vertes&#10;• 2 citrons confits..."></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Étapes (une par ligne) <span class="text-red-500">*</span></label>
+          <textarea name="steps" rows="7" required
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono text-sm"
+                    placeholder="1. Faire revenir les oignons dans l'huile...&#10;2. Ajouter le poulet et laisser dorer..."></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Lien image (URL)</label>
+            <input type="url" name="image"
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                   placeholder="https://images.unsplash.com/photo-...">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+            <input type="text" name="category"
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                   placeholder="Plat principal, Entrée, Dessert, Soupe...">
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-5 border-t">
+          <button type="button" id="btn-cancel"
+                  class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition">
+            Annuler
+          </button>
+          <button type="submit" id="btn-submit"
+                  class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition">
+            Ajouter la recette
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ──────────────────────────────────────────────
+    // Data (in-memory for now – later → fetch from Laravel)
+    // ──────────────────────────────────────────────
+    let recipes = [
+      {
+        id: 1,
+        title: "Tajine poulet citron confit",
+        description: "Un grand classique marocain, parfumé et fondant.",
+        ingredients: "1 kg poulet\n2 oignons\n2 citrons confits\n150 g olives vertes\nhuile d'olive\népices ras-el-hanout...",
+        steps: "1. Faire revenir oignons\n2. Ajouter poulet et épices\n3. Laisser mijoter 1h\n4. Ajouter olives et citron 10 min avant fin",
+        image: "",
+        category: "Plat principal"
+      },
+      {
+        id: 2,
+        title: "Harira marocaine",
+        description: "La fameuse soupe du Ramadan, très nourrissante.",
+        ingredients: "500 g viande hachée ou morceaux\n200 g pois chiches\n100 g lentilles\n2 oignons\ncoriandre, persil...",
+        steps: "1. Faire revenir viande et oignons\n2. Ajouter tomates et épices\n3. Verser l'eau et légumineuses\n4. Laisser cuire 1h30",
+        image: "",
+        category: "Soupe"
+      }
+    ];
+
+    const container   = document.getElementById('recipes-container');
+    const template    = container.querySelector('.recipe-card');
+    const modal       = document.getElementById('modal-add');
+    const form        = document.getElementById('add-recipe-form');
+    const modalTitle  = modal.querySelector('h2');
+    const submitBtn   = document.getElementById('btn-submit');
+
+    let isEditing = false;
+    let editingId = null;
+
+    // ──────────────────────────────────────────────
+    // Render all recipes
+    // ──────────────────────────────────────────────
+    function renderRecipes() {
+      // Clear old cards (keep template)
+      [...container.children].forEach(el => {
+        if (!el.classList.contains('hidden')) el.remove();
+      });
+
+      recipes.forEach(recipe => {
+        const card = template.cloneNode(true);
+        card.classList.remove('hidden');
+
+        card.querySelector('.recipe-title').textContent = recipe.title;
+        card.querySelector('p').textContent = recipe.description;
+        card.querySelector('.recipe-category').textContent = recipe.category || '—';
+
+        if (recipe.image) {
+          const imgDiv = card.querySelector('div.h-44');
+          imgDiv.innerHTML = `<img src="${recipe.image}" alt="${recipe.title}" class="w-full h-full object-cover">`;
+        }
+
+        card.querySelector('.edit-btn').dataset.id = recipe.id;
+        card.querySelector('.delete-btn').dataset.id = recipe.id;
+
+        container.appendChild(card);
+      });
+    }
+
+    // ──────────────────────────────────────────────
+    // Modal
+    // ──────────────────────────────────────────────
+    function openModal(edit = false, recipe = null) {
+      isEditing = edit;
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.remove('opacity-0', 'scale-95'), 20);
+
+      if (edit && recipe) {
+        editingId = recipe.id;
+        modalTitle.textContent = "Modifier la recette";
+        submitBtn.textContent = "Mettre à jour";
+
+        form.title.value       = recipe.title       || '';
+        form.description.value = recipe.description || '';
+        form.ingredients.value = recipe.ingredients || '';
+        form.steps.value       = recipe.steps       || '';
+        form.image.value       = recipe.image       || '';
+        form.category.value    = recipe.category    || '';
+      } else {
+        editingId = null;
+        modalTitle.textContent = "Ajouter une recette";
+        submitBtn.textContent = "Ajouter la recette";
+        form.reset();
+      }
+    }
+
+    function closeModal() {
+      modal.classList.add('opacity-0', 'scale-95');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+      form.reset();
+      isEditing = false;
+      editingId = null;
+    }
+
+    // ──────────────────────────────────────────────
+    // Events
+    // ──────────────────────────────────────────────
+    document.getElementById('btn-add').onclick = () => openModal(false);
+    document.getElementById('btn-cancel').onclick = closeModal;
+    modal.onclick = e => { if (e.target === modal) closeModal(); };
+
+    form.onsubmit = e => {
+      e.preventDefault();
+      const data = new FormData(form);
+
+      const recipeData = {
+        title:       data.get('title'),
+        description: data.get('description'),
+        ingredients: data.get('ingredients'),
+        steps:       data.get('steps'),
+        image:       data.get('image'),
+        category:    data.get('category')
+      };
+
+      if (isEditing) {
+        // UPDATE
+        const index = recipes.findIndex(r => r.id === editingId);
+        if (index !== -1) {
+          recipes[index] = { id: editingId, ...recipeData };
+        }
+      } else {
+        // CREATE
+        recipeData.id = Date.now();
+        recipes.push(recipeData);
+      }
+
+      renderRecipes();
+      closeModal();
+    };
+
+    // Delete + Edit delegation
+    container.addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const id = Number(btn.dataset.id);
+
+      if (btn.classList.contains('delete-btn')) {
+        if (!confirm("Supprimer cette recette ?")) return;
+        recipes = recipes.filter(r => r.id !== id);
+        renderRecipes();
+      }
+      else if (btn.classList.contains('edit-btn')) {
+        const recipe = recipes.find(r => r.id === id);
+        if (recipe) openModal(true, recipe);
+      }
+    });
+
+    // First render
+    renderRecipes();
+  </script>
+</body>
+</html>
